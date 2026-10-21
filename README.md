@@ -1,7 +1,7 @@
 # audio-time-stretch
 
-[![npm version](https://img.shields/npm/v/audio-time-stretch.svg)](https://npmjs.com/package/audio-time-stretch)
-[![license](https://img.shields/github/license/KrzysieQ123/audio-time-stretch)](https://github.com/KrzysieQ123/audio-time-stretch/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/audio-time-stretch.svg)](https://npmjs.com/package/audio-time-stretch)
+[![license](https://img.shields.io/github/license/KrzysieQ123/audio-time-stretch)](https://github.com/KrzysieQ123/audio-time-stretch/blob/main/LICENSE)
 
 Pitch-preserving audio time stretching for the Web Audio API.
 
