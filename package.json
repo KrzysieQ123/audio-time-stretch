@@ -1,0 +1,54 @@
+{
+  "name": "audio-time-stretch",
+  "version": "1.0.0",
+  "description": "Pitch-preserving audio time stretching for the Web Audio API",
+  "author": {
+    "name": "KrzysieQ123",
+    "url": "https://github.com/KrzysieQ123"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KrzysieQ123/audio-time-stretch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KrzysieQ123/audio-time-stretch/issues"
+  },
+  "homepage": "https://github.com/KrzysieQ123/audio-time-stretch#readme",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./min": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.min.js"
+    }
+  },
+  "scripts": {
+    "build": "npm run build:types && npm run build:normal && npm run build:min",
+    "build:types": "tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:normal": "esbuild src/index.ts --bundle --format=esm --target=es2022 --define:__TIME_STRETCH_WORKER_FILE__='\"./timeStretch.worker.js\"' --outfile=dist/index.js && esbuild src/timeStretch.worker.ts --bundle --format=esm --target=es2022 --outfile=dist/timeStretch.worker.js",
+    "build:min": "esbuild src/index.ts --bundle --format=esm --target=es2022 --minify --define:__TIME_STRETCH_WORKER_FILE__='\"./timeStretch.worker.min.js\"' --outfile=dist/index.min.js && esbuild src/timeStretch.worker.ts --bundle --format=esm --target=es2022 --minify --outfile=dist/timeStretch.worker.min.js"
+  },
+  "keywords": [
+    "audio",
+    "time-stretch",
+    "pitch",
+    "web-audio",
+    "wsola"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
