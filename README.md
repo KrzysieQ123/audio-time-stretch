@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/KrzysieQ123/audio-time-stretch)](https://github.com/KrzysieQ123/audio-time-stretch/blob/main/LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy_me_a_coffee-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/krzysieq43799)
 
-AudioBuffer time stretching and pitch shifting for the Web Audio API.
+Audio time stretching and pitch shifting for the Web Audio API.
 
 The library changes the tempo and pitch of an `AudioBuffer`. Processing runs inside a Web Worker and does not block the main thread.
 

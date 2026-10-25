@@ -1,7 +1,7 @@
 {
   "name": "audio-time-stretch",
   "version": "2.0.0",
-  "description": "AudioBuffer time stretching and pitch shifting for the Web Audio API",
+  "description": "Audio time stretching and pitch shifting for the Web Audio API",
   "author": {
     "name": "KrzysieQ123",
     "url": "https://github.com/KrzysieQ123"
