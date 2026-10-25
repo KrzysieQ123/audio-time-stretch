@@ -1,7 +1,7 @@
 {
   "name": "audio-time-stretch",
-  "version": "1.0.1",
-  "description": "Pitch-preserving audio time stretching for the Web Audio API",
+  "version": "2.0.0",
+  "description": "AudioBuffer time stretching and pitch shifting for the Web Audio API",
   "author": {
     "name": "KrzysieQ123",
     "url": "https://github.com/KrzysieQ123"
@@ -35,6 +35,7 @@
   },
   "scripts": {
     "build": "npm run build:types && npm run build:normal && npm run build:min",
+    "prepack": "npm run build",
     "build:types": "tsc -p tsconfig.json --emitDeclarationOnly",
     "build:normal": "esbuild src/index.ts --bundle --format=esm --target=es2022 --define:__TIME_STRETCH_WORKER_FILE__='\"./timeStretch.worker.js\"' --outfile=dist/index.js && esbuild src/timeStretch.worker.ts --bundle --format=esm --target=es2022 --outfile=dist/timeStretch.worker.js",
     "build:min": "esbuild src/index.ts --bundle --format=esm --target=es2022 --minify --define:__TIME_STRETCH_WORKER_FILE__='\"./timeStretch.worker.min.js\"' --outfile=dist/index.min.js && esbuild src/timeStretch.worker.ts --bundle --format=esm --target=es2022 --minify --outfile=dist/timeStretch.worker.min.js"

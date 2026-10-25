@@ -1,1 +1,4 @@
-export { stretchAudioBuffer } from "./timeStretch.js";
+export {
+  stretchAudioBuffer,
+  type AudioTransformOptions,
+} from "./timeStretch.js";

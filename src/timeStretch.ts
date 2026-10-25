@@ -1,3 +1,10 @@
+export type AudioTransformOptions = {
+  tempo?: number;
+  pitch?: number;
+  signal?: AbortSignal;
+  onProgress?: (progress: number) => void;
+};
+
 type StretchSuccess = {
   ok: true;
   channels: ArrayBuffer[];
@@ -20,13 +27,54 @@ declare const __TIME_STRETCH_WORKER_FILE__: string;
 export const stretchAudioBuffer = (
   context: BaseAudioContext,
   input: AudioBuffer,
-  rate: number,
-  signal?: AbortSignal,
-  onProgress?: (progress: number) => void,
-): Promise<AudioBuffer> =>
-  new Promise((resolve, reject) => {
+  options: AudioTransformOptions = {},
+): Promise<AudioBuffer> => {
+  const { tempo = 1, pitch = 1, signal, onProgress } = options;
+
+  return new Promise((resolve, reject) => {
     if (signal?.aborted) {
       reject(new DOMException("Aborted", "AbortError"));
+      return;
+    }
+
+    if (!Number.isFinite(tempo) || tempo <= 0) {
+      reject(new RangeError("Tempo must be greater than zero."));
+      return;
+    }
+
+    if (!Number.isFinite(pitch) || pitch <= 0) {
+      reject(new RangeError("Pitch must be greater than zero."));
+      return;
+    }
+
+    const changesTempo = Math.abs(tempo - 1) >= 0.000001;
+    const changesPitch = Math.abs(pitch - 1) >= 0.000001;
+
+    if (!changesTempo && !changesPitch) {
+      try {
+        const output = context.createBuffer(
+          input.numberOfChannels,
+          input.length,
+          input.sampleRate,
+        );
+
+        for (
+          let channelIndex = 0;
+          channelIndex < input.numberOfChannels;
+          channelIndex += 1
+        ) {
+          output.copyToChannel(
+            input.getChannelData(channelIndex),
+            channelIndex,
+          );
+        }
+
+        onProgress?.(1);
+        resolve(output);
+      } catch (error) {
+        reject(error);
+      }
+
       return;
     }
 
@@ -109,7 +157,8 @@ export const stretchAudioBuffer = (
         {
           channels: transfers,
           sampleRate: input.sampleRate,
-          rate,
+          tempo,
+          pitch,
         },
         transfers,
       );
@@ -117,3 +166,4 @@ export const stretchAudioBuffer = (
       rejectOnce(error);
     }
   });
+};

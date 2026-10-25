@@ -2,10 +2,11 @@
 
 [![npm version](https://img.shields.io/npm/v/audio-time-stretch.svg)](https://npmjs.com/package/audio-time-stretch)
 [![license](https://img.shields.io/github/license/KrzysieQ123/audio-time-stretch)](https://github.com/KrzysieQ123/audio-time-stretch/blob/main/LICENSE)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy_me_a_coffee-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/krzysieq43799)
 
-Pitch-preserving audio time stretching for the Web Audio API.
+AudioBuffer time stretching and pitch shifting for the Web Audio API.
 
-The library changes the tempo and duration of an `AudioBuffer` without changing its original pitch. Audio processing runs inside a Web Worker.
+The library changes the tempo and pitch of an `AudioBuffer`. Processing runs inside a Web Worker and does not block the main thread.
 
 ## Installation
 
@@ -27,7 +28,10 @@ const input = await context.decodeAudioData(encoded);
 const output = await stretchAudioBuffer(
   context,
   input,
-  1.5,
+  {
+    tempo: 1.5,
+    pitch: 1,
+  },
 );
 
 const source = context.createBufferSource();
@@ -39,39 +43,66 @@ await context.resume();
 source.start();
 ```
 
-A rate greater than `1` makes the audio faster:
+## Tempo and pitch
 
-```js
-await stretchAudioBuffer(context, input, 1.5);
-```
-
-A rate below `1` makes it slower:
-
-```js
-await stretchAudioBuffer(context, input, 0.75);
-```
-
-The original pitch is preserved.
-
-## Progress
-
-An optional callback can be used to track processing progress:
+Increase tempo while preserving the original pitch:
 
 ```js
 const output = await stretchAudioBuffer(
   context,
   input,
-  1.5,
-  undefined,
-  (progress) => {
-    console.log(`${Math.round(progress * 100)}%`);
+  {
+    tempo: 1.5,
+    pitch: 1,
+  },
+);
+```
+
+Change pitch without changing the final duration:
+
+```js
+const output = await stretchAudioBuffer(
+  context,
+  input,
+  {
+    tempo: 1,
+    pitch: 1.25,
+  },
+);
+```
+
+Increase tempo and pitch together:
+
+```js
+const output = await stretchAudioBuffer(
+  context,
+  input,
+  {
+    tempo: 1.5,
+    pitch: 1.5,
+  },
+);
+```
+
+Values greater than `1` increase tempo or pitch. Values below `1` decrease them.
+
+## Progress
+
+```js
+const output = await stretchAudioBuffer(
+  context,
+  input,
+  {
+    tempo: 0.75,
+    pitch: 1,
+    onProgress: (progress) => {
+      console.log(`${Math.round(progress * 100)}%`)
+    }
   },
 );
 ```
 
 ## Cancellation
-
-Processing can be cancelled with an `AbortController`:
 
 ```js
 const controller = new AbortController();
@@ -79,8 +110,11 @@ const controller = new AbortController();
 const processing = stretchAudioBuffer(
   context,
   input,
-  0.75,
-  controller.signal,
+  {
+    tempo: 0.75,
+    pitch: 1,
+    signal: controller.signal,
+  },
 );
 
 controller.abort();
@@ -100,43 +134,33 @@ try {
 stretchAudioBuffer(
   context: BaseAudioContext,
   input: AudioBuffer,
-  rate: number,
-  signal?: AbortSignal,
-  onProgress?: (progress: number) => void,
+  options?: {
+    tempo?: number;
+    pitch?: number;
+    signal?: AbortSignal;
+    onProgress?: (progress: number) => void;
+  }
 ): Promise<AudioBuffer>
 ```
 
-### `context`
+### Options
 
-An `AudioContext` or another `BaseAudioContext` used to create the output buffer.
-
-### `input`
-
-The decoded `AudioBuffer` to process.
-
-### `rate`
-
-The tempo multiplier.
-
-### `signal`
-
-An optional `AbortSignal` used to cancel processing.
-
-### `onProgress`
-
-An optional callback receiving processing progress from `0` to `1`.
+- `tempo` - tempo multiplier. Defaults to `1`.
+- `pitch` - pitch multiplier. Defaults to `1`.
+- `signal` - optional `AbortSignal` used to cancel processing.
+- `onProgress` - optional callback receiving progress from `0` to `1`.
 
 ## Notes
 
 - The input buffer is not modified.
 - Processing is performed offline on the complete audio buffer.
 - Very long files may require significant memory.
-- Extreme playback rates may introduce audible artifacts.
-- Supported audio formats depend on the browser.
+- Extreme tempo or pitch values may introduce audible artifacts.
+- Supported input formats depend on the browser.
 
 ## Browser support
 
-The library requires a browser with support for:
+The library requires support for:
 
 - Web Audio API
 - Web Workers
